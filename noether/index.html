@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Emmy Noether</title>
+<style>
+  :root{
+    --bg:#0c1512;
+    --bg2:#13241d;
+    --accent:#4fd1a8;
+    --accent-soft:#bff3e2;
+    --text:#eafff6;
+    --muted:#79a394;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    background:radial-gradient(130% 100% at 50% 0%,var(--bg2) 0%,var(--bg) 65%);
+    color:var(--text);min-height:100dvh;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:1.8rem;padding:2.4rem 1.6rem;position:relative;overflow:hidden;
+  }
+  /* motivo de simetría: dos mitades espejadas alrededor de un eje central */
+  .sym{position:fixed;inset:0;z-index:0;opacity:.4;}
+  .axis{position:fixed;top:0;bottom:0;left:50%;width:1px;background:linear-gradient(180deg,transparent,rgba(79,209,168,.4),transparent);z-index:0;}
+  .wrap{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:1.8rem;}
+  .eyebrow{font-size:.72rem;letter-spacing:.34em;text-transform:uppercase;color:var(--muted);text-align:center;}
+  .name{font-family:Georgia,"Times New Roman",serif;font-size:2.1rem;font-weight:600;letter-spacing:-.01em;text-align:center;line-height:1.05;}
+  .theorem{
+    font-size:.92rem;line-height:1.5;color:var(--accent-soft);
+    text-align:center;max-width:24ch;
+    border-top:1px solid rgba(79,209,168,.25);
+    border-bottom:1px solid rgba(79,209,168,.25);
+    padding:.7rem 0;letter-spacing:.01em;
+  }
+  .theorem b{color:var(--accent);font-weight:600;}
+  .player{position:relative;display:grid;place-items:center;margin-top:.4rem;}
+  .ring{position:absolute;width:188px;height:188px;border:1px solid rgba(79,209,168,.3);transform:rotate(45deg);}
+  .ring.pulse{animation:pulse 2.6s ease-out infinite;}
+  @keyframes pulse{0%{transform:rotate(45deg) scale(1);opacity:.6;}100%{transform:rotate(45deg) scale(1.5);opacity:0;}}
+  .btn{
+    position:relative;width:152px;height:152px;border-radius:50%;border:none;cursor:pointer;
+    background:linear-gradient(155deg,var(--accent) 0%,#2c9c79 100%);
+    box-shadow:0 0 55px -8px rgba(79,209,168,.6),inset 0 2px 8px rgba(255,255,255,.35);
+    display:grid;place-items:center;transition:transform .12s ease;
+  }
+  .btn:active{transform:scale(.93);}
+  .btn svg{width:58px;height:58px;fill:#04231a;}
+  .progress{width:min(78vw,300px);height:4px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden;}
+  .progress > i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--accent-soft),var(--accent));border-radius:99px;transition:width .15s linear;}
+  .hint{font-size:.8rem;color:var(--muted);text-align:center;min-height:1.2em;letter-spacing:.04em;}
+  @media (prefers-reduced-motion:reduce){.ring.pulse{animation:none;}}
+</style>
+</head>
+<body>
+  <svg class="sym" preserveAspectRatio="none" viewBox="0 0 400 800" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <g stroke="#2c9c79" stroke-width="1" fill="none" opacity="0.6">
+      <!-- patrón espejado respecto del eje x=200 -->
+      <path d="M40,120 L200,260 M360,120 L200,260"/>
+      <path d="M40,300 L200,440 M360,300 L200,440"/>
+      <path d="M40,480 L200,620 M360,480 L200,620"/>
+      <circle cx="40" cy="120" r="4"/><circle cx="360" cy="120" r="4"/>
+      <circle cx="40" cy="300" r="4"/><circle cx="360" cy="300" r="4"/>
+      <circle cx="40" cy="480" r="4"/><circle cx="360" cy="480" r="4"/>
+      <circle cx="200" cy="260" r="3"/><circle cx="200" cy="440" r="3"/><circle cx="200" cy="620" r="3"/>
+    </g>
+  </svg>
+  <div class="axis"></div>
+
+  <div class="wrap">
+    <div style="text-align:center">
+      <div class="eyebrow">Matemática · 1882–1935</div>
+      <h1 class="name">Emmy Noether</h1>
+    </div>
+
+    <p class="theorem">A cada <b>simetría</b> le corresponde una <b>ley de conservación</b>.</p>
+
+    <div class="player">
+      <span class="ring pulse" id="ring"></span>
+      <button class="btn" id="btn" aria-label="Reproducir audio">
+        <svg id="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        <svg id="icon-pause" viewBox="0 0 24 24" style="display:none"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+      </button>
+    </div>
+
+    <div class="progress"><i id="bar"></i></div>
+    <p class="hint" id="hint">Tocá para escuchar</p>
+  </div>
+
+  <!-- Poné tu archivo al lado de este index.html con el nombre audio.mp3 -->
+  <audio id="audio" src="audioemmy.mp3" preload="auto"></audio>
+
+<script>
+  const audio=document.getElementById('audio'),btn=document.getElementById('btn'),
+        ring=document.getElementById('ring'),bar=document.getElementById('bar'),
+        hint=document.getElementById('hint'),iPlay=document.getElementById('icon-play'),
+        iPause=document.getElementById('icon-pause');
+  function setPlaying(on){iPlay.style.display=on?'none':'block';iPause.style.display=on?'block':'none';ring.classList.toggle('pulse',!on);}
+  btn.addEventListener('click',()=>{audio.paused?audio.play().catch(()=>hint.textContent='No se pudo cargar el audio. Revisá el nombre del archivo.'):audio.pause();});
+  audio.addEventListener('play',()=>{setPlaying(true);hint.textContent='Reproduciendo…';});
+  audio.addEventListener('pause',()=>{setPlaying(false);hint.textContent='En pausa';});
+  audio.addEventListener('ended',()=>{setPlaying(false);bar.style.width='0%';hint.textContent='Tocá para escuchar';});
+  audio.addEventListener('timeupdate',()=>{if(audio.duration)bar.style.width=(audio.currentTime/audio.duration*100)+'%';});
+  window.addEventListener('load',()=>{audio.play().catch(()=>{});});
+</script>
+</body>
+</html>

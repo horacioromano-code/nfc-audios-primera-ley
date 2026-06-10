@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Albert Einstein</title>
+<style>
+  :root{
+    --bg:#070a18;
+    --bg2:#101a3a;
+    --accent:#ffd166;
+    --accent-soft:#fff0c2;
+    --text:#eef2ff;
+    --muted:#7d88b3;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    min-height:100dvh;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:2rem;padding:2.4rem 1.6rem;position:relative;overflow:hidden;
+  }
+  /* malla de espacio-tiempo curvada por la masa central */
+  .grid{position:fixed;inset:0;z-index:0;opacity:.5;}
+  .glow{
+    position:fixed;width:340px;height:340px;border-radius:50%;z-index:0;
+    top:50%;left:50%;transform:translate(-50%,-58%);
+    background:radial-gradient(circle,rgba(255,209,102,.18) 0%,rgba(16,26,58,0) 70%);
+    pointer-events:none;
+  }
+  .wrap{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:2rem;}
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.34em;text-transform:uppercase;color:var(--muted);
+  }
+  .name{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:2.1rem;font-weight:600;letter-spacing:-.01em;text-align:center;line-height:1.05;
+  }
+  .years{font-size:.85rem;color:var(--muted);letter-spacing:.08em;margin-top:.45rem;}
+  .phrase{
+    font-size:.92rem;line-height:1.5;color:var(--accent-soft);
+    text-align:center;max-width:24ch;
+    border-top:1px solid rgba(255,209,102,.25);
+    border-bottom:1px solid rgba(255,209,102,.25);
+    padding:.7rem 0;letter-spacing:.01em;
+  }
+  .phrase b{color:var(--accent);font-weight:600;}
+  .player{position:relative;display:grid;place-items:center;}
+  .ring{position:absolute;width:188px;height:188px;border-radius:50%;border:1px solid rgba(255,209,102,.3);}
+  .ring.pulse{animation:pulse 2.6s ease-out infinite;}
+  @keyframes pulse{0%{transform:scale(1);opacity:.6;}100%{transform:scale(1.5);opacity:0;}}
+  .btn{
+    position:relative;width:152px;height:152px;border-radius:50%;border:none;cursor:pointer;
+    background:radial-gradient(circle at 38% 32%,#fff,var(--accent) 60%,#e0a93c 100%);
+    box-shadow:0 0 60px -6px rgba(255,209,102,.65),inset 0 2px 8px rgba(255,255,255,.5);
+    display:grid;place-items:center;transition:transform .12s ease;
+  }
+  .btn:active{transform:scale(.93);}
+  .btn svg{width:58px;height:58px;fill:#1a1305;}
+  .progress{width:min(78vw,300px);height:4px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden;}
+  .progress > i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--accent-soft),var(--accent));border-radius:99px;transition:width .15s linear;}
+  .hint{font-size:.8rem;color:var(--muted);text-align:center;min-height:1.2em;letter-spacing:.04em;}
+  @media (prefers-reduced-motion:reduce){.ring.pulse{animation:none;}}
+</style>
+</head>
+<body>
+  <svg class="grid" preserveAspectRatio="none" viewBox="0 0 400 800" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs><linearGradient id="ln" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2c3a6e"/><stop offset="1" stop-color="#16203f"/>
+    </linearGradient></defs>
+    <g stroke="url(#ln)" stroke-width="1" fill="none">
+      <!-- líneas horizontales que se hunden hacia el centro (curvatura) -->
+      <path d="M0,140 Q200,180 400,140"/>
+      <path d="M0,240 Q200,330 400,240"/>
+      <path d="M0,340 Q200,470 400,340"/>
+      <path d="M0,440 Q200,560 400,440"/>
+      <path d="M0,540 Q200,610 400,540"/>
+      <path d="M0,640 Q200,670 400,640"/>
+      <!-- líneas verticales -->
+      <path d="M60,100 Q90,400 60,700"/>
+      <path d="M130,100 Q170,400 130,700"/>
+      <path d="M200,100 Q200,420 200,700"/>
+      <path d="M270,100 Q230,400 270,700"/>
+      <path d="M340,100 Q310,400 340,700"/>
+    </g>
+  </svg>
+  <div class="glow"></div>
+
+  <div class="wrap">
+    <div style="text-align:center">
+      <div class="eyebrow">Físico · 1879–1955</div>
+      <h1 class="name">Albert Einstein</h1>
+    </div>
+
+    <p class="phrase">La <b>masa</b> y la <b>energía</b> son dos formas de lo mismo.</p>
+
+    <div class="player">
+      <span class="ring pulse" id="ring"></span>
+      <button class="btn" id="btn" aria-label="Reproducir audio">
+        <svg id="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        <svg id="icon-pause" viewBox="0 0 24 24" style="display:none"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+      </button>
+    </div>
+
+    <div class="progress"><i id="bar"></i></div>
+    <p class="hint" id="hint">Tocá para escuchar</p>
+  </div>
+
+  <!-- Poné tu archivo al lado de este index.html con el nombre audio.mp3 -->
+  <audio id="audio" src="audioalbert.mp3" preload="auto"></audio>
+
+<script>
+  const audio=document.getElementById('audio'),btn=document.getElementById('btn'),
+        ring=document.getElementById('ring'),bar=document.getElementById('bar'),
+        hint=document.getElementById('hint'),iPlay=document.getElementById('icon-play'),
+        iPause=document.getElementById('icon-pause');
+  function setPlaying(on){iPlay.style.display=on?'none':'block';iPause.style.display=on?'block':'none';ring.classList.toggle('pulse',!on);}
+  btn.addEventListener('click',()=>{audio.paused?audio.play().catch(()=>hint.textContent='No se pudo cargar el audio. Revisá el nombre del archivo.'):audio.pause();});
+  audio.addEventListener('play',()=>{setPlaying(true);hint.textContent='Reproduciendo…';});
+  audio.addEventListener('pause',()=>{setPlaying(false);hint.textContent='En pausa';});
+  audio.addEventListener('ended',()=>{setPlaying(false);bar.style.width='0%';hint.textContent='Tocá para escuchar';});
+  audio.addEventListener('timeupdate',()=>{if(audio.duration)bar.style.width=(audio.currentTime/audio.duration*100)+'%';});
+  window.addEventListener('load',()=>{audio.play().catch(()=>{});});
+</script>
+</body>
+</html>
